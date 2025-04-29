@@ -1,118 +1,209 @@
-document.addEventListener('DOMContentLoaded', () => { const gameState = { day: 0, distance: 0, food: 100, health: 100, totalDistance: 1000 };
+document.addEventListener('DOMContentLoaded', () => {
+  const gameState = {
+    day: 0,
+    distance: 0,
+    food: 100,
+    health: 100,
+    totalDistance: 1000
+  };
 
-const travelStories = [ "You crossed a wide river safely!", "You found a beautiful valley filled with flowers.", "A wild horse ran alongside your wagon.", "You discovered an abandoned village." ];
+  const travelStories = [
+    "You crossed a wide river safely!",
+    "You found a beautiful valley filled with flowers.",
+    "A wild horse ran alongside your wagon.",
+    "You discovered an abandoned village."
+  ];
 
-const restStories = [ "You rested under a giant oak tree.", "Everyone feels refreshed after a night's sleep.", "You found a small pond and refilled your water.", "A warm campfire lifted everyone's spirits." ];
+  const restStories = [
+    "You rested under a giant oak tree.",
+    "Everyone feels refreshed after a night's sleep.",
+    "You found a small pond and refilled your water.",
+    "A warm campfire lifted everyone's spirits."
+  ];
 
-const mineStories = [ "You mined some rare ores!", "You found a small cave filled with coal.", "You stumbled across a silver vein!", "You dug deep but found only rocks." ];
+  const mineStories = [
+    "You mined some rare ores!",
+    "You found a small cave filled with coal.",
+    "You stumbled across a silver vein!",
+    "You dug deep but found only rocks."
+  ];
 
-const huntStories = [ "You hunted a wild boar!", "You caught a fish from a nearby stream.", "You chased a rabbit but missed.", "You scared away some sheep and gathered wool." ];
+  const huntStories = [
+    "You hunted a wild boar!",
+    "You caught a fish from a nearby stream.",
+    "You chased a rabbit but missed.",
+    "You scared away some sheep and gathered wool."
+  ];
 
-const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); let sunX = 0;
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  let sunX = 0;
 
-function resizeCanvas() { canvas.width = Math.min(window.innerWidth - 40, 800); canvas.height = Math.min(window.innerHeight - 300, 600); }
+  function resizeCanvas() {
+    canvas.width = Math.min(window.innerWidth - 40, 800);
+    canvas.height = Math.min(window.innerHeight - 350, 500);
+  }
 
-resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-function updateUI() { document.getElementById('dayCount').textContent = gameState.day; document.getElementById('distance').textContent = gameState.distance; document.getElementById('food').textContent = gameState.food; document.getElementById('health').textContent = gameState.health; document.getElementById('totalDistance').textContent = gameState.totalDistance; }
+  function updateUI() {
+    document.getElementById('dayCount').textContent = gameState.day;
+    document.getElementById('distance').textContent = gameState.distance;
+    document.getElementById('food').textContent = gameState.food;
+    document.getElementById('health').textContent = gameState.health;
+    document.getElementById('totalDistance').textContent = gameState.totalDistance;
+  }
 
-function randomFromArray(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function randomFromArray(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
 
-function setStory(text) { document.getElementById('storyText').textContent = text; }
+  function setStory(text) {
+    document.getElementById('storyText').textContent = text;
+  }
 
-function randomEvent(chance) { return Math.random() < chance; }
+  function randomEvent(chance) {
+    return Math.random() < chance;
+  }
 
-function travel() { gameState.day++; const travelDist = Math.floor(Math.random() * 10) + 5; gameState.distance += travelDist; gameState.food -= Math.floor(Math.random() * 5) + 3; if (randomEvent(0.15)) gameState.health -= Math.floor(Math.random() * 15) + 5;
+  function travel() {
+    gameState.day++;
+    const travelDist = Math.floor(Math.random() * 10) + 5;
+    gameState.distance += travelDist;
+    gameState.food -= Math.floor(Math.random() * 5) + 3;
+    if (randomEvent(0.15)) gameState.health -= Math.floor(Math.random() * 15) + 5;
 
-setStory(randomFromArray(travelStories));
+    setStory(randomFromArray(travelStories));
 
-checkGameStatus();
-updateUI();
+    checkGameStatus();
+    updateUI();
+  }
 
-}
+  function rest() {
+    gameState.day++;
+    gameState.health = Math.min(100, gameState.health + 10);
+    gameState.food -= 5;
 
-function rest() { gameState.day++; gameState.health = Math.min(100, gameState.health + 10); gameState.food -= 5;
+    setStory(randomFromArray(restStories));
 
-setStory(randomFromArray(restStories));
+    checkGameStatus();
+    updateUI();
+  }
 
-checkGameStatus();
-updateUI();
+  function mine() {
+    gameState.day++;
+    if (randomEvent(0.5)) {
+      const found = Math.floor(Math.random() * 10) + 5;
+      gameState.food += found;
+    } else {
+      gameState.health = Math.min(100, gameState.health + 5);
+    }
+    gameState.food -= 4;
 
-}
+    setStory(randomFromArray(mineStories));
 
-function mine() { gameState.day++; if (randomEvent(0.5)) { const found = Math.floor(Math.random() * 10) + 5; gameState.food += found; } else { gameState.health = Math.min(100, gameState.health + 5); } gameState.food -= 4;
+    checkGameStatus();
+    updateUI();
+  }
 
-setStory(randomFromArray(mineStories));
+  function hunt() {
+    gameState.day++;
+    if (randomEvent(0.7)) {
+      const meat = Math.floor(Math.random() * 15) + 10;
+      gameState.food += meat;
+    } else {
+      gameState.health -= Math.floor(Math.random() * 10) + 5;
+    }
+    gameState.food -= 6;
 
-checkGameStatus();
-updateUI();
+    setStory(randomFromArray(huntStories));
 
-}
+    checkGameStatus();
+    updateUI();
+  }
 
-function hunt() { gameState.day++; if (randomEvent(0.7)) { const meat = Math.floor(Math.random() * 15) + 10; gameState.food += meat; } else { gameState.health -= Math.floor(Math.random() * 10) + 5; } gameState.food -= 6;
+  function checkGameStatus() {
+    if (gameState.food <= 0 || gameState.health <= 0) {
+      alert('Game Over! You did not survive the trail.');
+      resetGame();
+    } else if (gameState.distance >= gameState.totalDistance) {
+      alert('Congratulations! You reached the End Portal.');
+      resetGame();
+    }
+  }
 
-setStory(randomFromArray(huntStories));
+  function resetGame() {
+    gameState.day = 0;
+    gameState.distance = 0;
+    gameState.food = 100;
+    gameState.health = 100;
+    setStory("Your adventure begins...");
+    updateUI();
+  }
 
-checkGameStatus();
-updateUI();
+  function drawScene() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-}
+    // Determine biome based on distance
+    let groundColor = '#7CFC00'; // Default grass
+    if (gameState.distance > 900) {
+      groundColor = '#9370DB'; // End Portal area
+    } else if (gameState.distance > 600) {
+      groundColor = '#F0F8FF'; // Snowy tundra
+    } else if (gameState.distance > 300) {
+      groundColor = '#F4A460'; // Desert
+    }
 
-function checkGameStatus() { if (gameState.food <= 0 || gameState.health <= 0) { alert('Game Over! You did not survive the trail.'); resetGame(); } else if (gameState.distance >= gameState.totalDistance) { alert('Congratulations! You reached the End Portal.'); resetGame(); } }
+    // Draw biome background
+    ctx.fillStyle = groundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-function resetGame() { gameState.day = 0; gameState.distance = 0; gameState.food = 100; gameState.health = 100; setStory("Your adventure begins..."); updateUI(); }
+    // Draw dirt trail
+    const trailHeight = 100;
+    ctx.fillStyle = '#8B4513'; // Saddle brown
+    ctx.fillRect(0, canvas.height - trailHeight, canvas.width, trailHeight);
 
-function drawScene() { ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw sun
+    ctx.fillStyle = '#FFD700'; // Gold
+    ctx.beginPath();
+    ctx.arc(sunX, canvas.height * 0.15, 30, 0, Math.PI * 2);
+    ctx.fill();
 
-// Determine biome based on distance
-let groundColor = '#7CFC00';
-if (gameState.distance > 900) {
-  groundColor = '#9370DB';
-} else if (gameState.distance > 600) {
-  groundColor = '#F0F8FF';
-} else if (gameState.distance > 300) {
-  groundColor = '#F4A460';
-}
+    sunX += 1;
+    if (sunX > canvas.width + 30) {
+      sunX = -30;
+    }
 
-ctx.fillStyle = groundColor;
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw wagon
+    const wagonWidth = 100;
+    const wagonHeight = 50;
+    const wagonX = (gameState.distance / gameState.totalDistance) * (canvas.width - wagonWidth);
+    const wagonY = canvas.height - trailHeight - wagonHeight;
 
-const trailHeight = 100;
-ctx.fillStyle = '#8B4513';
-ctx.fillRect(0, canvas.height - trailHeight, canvas.width, trailHeight);
+    ctx.fillStyle = '#D2B48C'; // Tan
+    ctx.fillRect(wagonX, wagonY, wagonWidth, wagonHeight);
 
-ctx.fillStyle = '#FFD700';
-ctx.beginPath();
-ctx.arc(sunX, canvas.height * 0.15, 30, 0, Math.PI * 2);
-ctx.fill();
+    ctx.fillStyle = '#654321'; // Dark brown wheels
+    ctx.beginPath();
+    ctx.arc(wagonX + 20, wagonY + wagonHeight, 10, 0, Math.PI * 2);
+    ctx.fill();
 
-sunX += 1;
-if (sunX > canvas.width + 30) {
-  sunX = -30;
-}
+    ctx.beginPath();
+    ctx.arc(wagonX + 80, wagonY + wagonHeight, 10, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-const wagonWidth = 100;
-const wagonHeight = 50;
-const wagonX = (gameState.distance / gameState.totalDistance) * (canvas.width - wagonWidth);
-const wagonY = canvas.height - trailHeight - wagonHeight;
+  function gameLoop() {
+    drawScene();
+    requestAnimationFrame(gameLoop);
+  }
 
-ctx.fillStyle = '#D2B48C';
-ctx.fillRect(wagonX, wagonY, wagonWidth, wagonHeight);
+  document.getElementById('travelBtn')?.addEventListener('click', travel);
+  document.getElementById('restBtn')?.addEventListener('click', rest);
+  document.getElementById('mineBtn')?.addEventListener('click', mine);
+  document.getElementById('huntBtn')?.addEventListener('click', hunt);
 
-ctx.fillStyle = '#654321';
-ctx.beginPath();
-ctx.arc(wagonX + 20, wagonY + wagonHeight, 10, 0, Math.PI * 2);
-ctx.fill();
-
-ctx.beginPath();
-ctx.arc(wagonX + 80, wagonY + wagonHeight, 10, 0, Math.PI * 2);
-ctx.fill();
-
-}
-
-function gameLoop() { drawScene(); requestAnimationFrame(gameLoop); }
-
-document.getElementById('travelBtn')?.addEventListener('click', travel); document.getElementById('restBtn')?.addEventListener('click', rest); document.getElementById('mineBtn')?.addEventListener('click', mine); document.getElementById('huntBtn')?.addEventListener('click', hunt);
-
-updateUI(); gameLoop(); });
-
+  updateUI();
+  gameLoop();
+});
