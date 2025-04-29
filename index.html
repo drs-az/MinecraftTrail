@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Trail Adventure</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Minecraft Trail Adventure</h1>
+    <nav>
+      <ul>
+        <li><button id="new-game-btn">New Game</button></li>
+        <li><button id="load-game-btn">Load Game</button></li>
+        <li><button id="settings-btn">Settings</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="game-container">
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </section>
+
+    <section id="controls">
+      <button id="travelBtn">Travel</button>
+      <button id="restBtn">Rest</button>
+      <button id="mineBtn">Mine</button>
+      <button id="huntBtn">Hunt</button>
+    </section>
+
+    <section id="status-panel">
+      <p>Day: <span id="dayCount">0</span></p>
+      <p>Distance: <span id="distance">0</span> / <span id="totalDistance">1000</span></p>
+      <p>Food: <span id="food">100</span></p>
+      <p>Health: <span id="health">100</span></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Minecraft Trail Adventure</p>
+  </footer>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.error('SW error:', err));
+    }
+  </script>
+
+  <!-- Game Logic -->
+  <script>
+    const gameState = {
+      day: 0,
+      distance: 0,
+      food: 100,
+      health: 100,
+      totalDistance: 1000
+    };
+
+    function updateUI() {
+      document.getElementById('dayCount').textContent = gameState.day;
+      document.getElementById('distance').textContent = gameState.distance;
+      document.getElementById('food').textContent = gameState.food;
+      document.getElementById('health').textContent = gameState.health;
+      document.getElementById('totalDistance').textContent = gameState.totalDistance;
+    }
+
+    function randomEvent(chance) {
+      return Math.random() < chance;
+    }
+
+    function travel() {
+      gameState.day++;
+      const travelDist = Math.floor(Math.random() * 10) + 5;
+      gameState.distance += travelDist;
+      gameState.food -= Math.floor(Math.random() * 5) + 3;
+      if (randomEvent(0.15)) gameState.health -= Math.floor(Math.random() * 15) + 5;
+      checkGameStatus();
+      updateUI();
+    }
+
+    function rest() {
+      gameState.day++;
+      gameState.health = Math.min(100, gameState.health + 10);
+      gameState.food -= 5;
+      checkGameStatus();
+      updateUI();
+    }
+
+    function mine() {
+      gameState.day++;
+      // Mining yields food or restores health randomly
+      if (randomEvent(0.5)) {
+        const found = Math.floor(Math.random() * 10) + 5;
+        gameState.food += found;
+      } else {
+        gameState.health = Math.min(100, gameState.health + 5);
+      }
+      gameState.food -= 4;
+      checkGameStatus();
+      updateUI();
+    }
+
+    function hunt() {
+      gameState.day++;
+      if (randomEvent(0.7)) {
+        const meat = Math.floor(Math.random() * 15) + 10;
+        gameState.food += meat;
+      } else {
+        gameState.health -= Math.floor(Math.random() * 10) + 5;
+      }
+      gameState.food -= 6;
+      checkGameStatus();
+      updateUI();
+    }
+
+    function checkGameStatus() {
+      if (gameState.food <= 0 || gameState.health <= 0) {
+        alert('Game Over! You did not survive the trail.');
+        resetGame();
+      } else if (gameState.distance >= gameState.totalDistance) {
+        alert('Congratulations! You reached the End Portal.');
+        resetGame();
+      }
+    }
+
+    function resetGame() {
+      gameState.day = 0;
+      gameState.distance = 0;
+      gameState.food = 100;
+      gameState.health = 100;
+      updateUI();
+    }
+
+    document.getElementById('travelBtn').addEventListener('click', travel);
+    document.getElementById('restBtn').addEventListener('click', rest);
+    document.getElementById('mineBtn').addEventListener('click', mine);
+    document.getElementById('huntBtn').addEventListener('click', hunt);
+
+    updateUI();
+  </script>
+</body>
+</html>
