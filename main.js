@@ -1,75 +1,157 @@
-document.addEventListener('DOMContentLoaded', () => { const gameState = { day: 0, distance: 0, food: 100, health: 100, totalDistance: 1000 };
+document.addEventListener('DOMContentLoaded', () => {
+  const gameState = {
+    day: 0,
+    distance: 0,
+    food: 100,
+    health: 100,
+    totalDistance: 1000
+  };
 
-const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); let sunX = 0;
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  let sunX = 0;
 
-function updateUI() { document.getElementById('dayCount').textContent = gameState.day; document.getElementById('distance').textContent = gameState.distance; document.getElementById('food').textContent = gameState.food; document.getElementById('health').textContent = gameState.health; document.getElementById('totalDistance').textContent = gameState.totalDistance; }
+  function resizeCanvas() {
+    canvas.width = Math.min(window.innerWidth - 40, 800);
+    canvas.height = Math.min(window.innerHeight - 300, 600);
+  }
 
-function randomEvent(chance) { return Math.random() < chance; }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-function travel() { gameState.day++; const travelDist = Math.floor(Math.random() * 10) + 5; gameState.distance += travelDist; gameState.food -= Math.floor(Math.random() * 5) + 3; if (randomEvent(0.15)) gameState.health -= Math.floor(Math.random() * 15) + 5; checkGameStatus(); updateUI(); }
+  function updateUI() {
+    document.getElementById('dayCount').textContent = gameState.day;
+    document.getElementById('distance').textContent = gameState.distance;
+    document.getElementById('food').textContent = gameState.food;
+    document.getElementById('health').textContent = gameState.health;
+    document.getElementById('totalDistance').textContent = gameState.totalDistance;
+  }
 
-function rest() { gameState.day++; gameState.health = Math.min(100, gameState.health + 10); gameState.food -= 5; checkGameStatus(); updateUI(); }
+  function randomEvent(chance) {
+    return Math.random() < chance;
+  }
 
-function mine() { gameState.day++; if (randomEvent(0.5)) { const found = Math.floor(Math.random() * 10) + 5; gameState.food += found; } else { gameState.health = Math.min(100, gameState.health + 5); } gameState.food -= 4; checkGameStatus(); updateUI(); }
+  function travel() {
+    gameState.day++;
+    const travelDist = Math.floor(Math.random() * 10) + 5;
+    gameState.distance += travelDist;
+    gameState.food -= Math.floor(Math.random() * 5) + 3;
+    if (randomEvent(0.15)) gameState.health -= Math.floor(Math.random() * 15) + 5;
+    checkGameStatus();
+    updateUI();
+  }
 
-function hunt() { gameState.day++; if (randomEvent(0.7)) { const meat = Math.floor(Math.random() * 15) + 10; gameState.food += meat; } else { gameState.health -= Math.floor(Math.random() * 10) + 5; } gameState.food -= 6; checkGameStatus(); updateUI(); }
+  function rest() {
+    gameState.day++;
+    gameState.health = Math.min(100, gameState.health + 10);
+    gameState.food -= 5;
+    checkGameStatus();
+    updateUI();
+  }
 
-function checkGameStatus() { if (gameState.food <= 0 || gameState.health <= 0) { alert('Game Over! You did not survive the trail.'); resetGame(); } else if (gameState.distance >= gameState.totalDistance) { alert('Congratulations! You reached the End Portal.'); resetGame(); } }
+  function mine() {
+    gameState.day++;
+    if (randomEvent(0.5)) {
+      const found = Math.floor(Math.random() * 10) + 5;
+      gameState.food += found;
+    } else {
+      gameState.health = Math.min(100, gameState.health + 5);
+    }
+    gameState.food -= 4;
+    checkGameStatus();
+    updateUI();
+  }
 
-function resetGame() { gameState.day = 0; gameState.distance = 0; gameState.food = 100; gameState.health = 100; updateUI(); }
+  function hunt() {
+    gameState.day++;
+    if (randomEvent(0.7)) {
+      const meat = Math.floor(Math.random() * 15) + 10;
+      gameState.food += meat;
+    } else {
+      gameState.health -= Math.floor(Math.random() * 10) + 5;
+    }
+    gameState.food -= 6;
+    checkGameStatus();
+    updateUI();
+  }
 
-function drawScene() { ctx.clearRect(0, 0, canvas.width, canvas.height);
+  function checkGameStatus() {
+    if (gameState.food <= 0 || gameState.health <= 0) {
+      alert('Game Over! You did not survive the trail.');
+      resetGame();
+    } else if (gameState.distance >= gameState.totalDistance) {
+      alert('Congratulations! You reached the End Portal.');
+      resetGame();
+    }
+  }
 
-// Determine biome based on distance
-let groundColor = '#7CFC00'; // Grasslands
-if (gameState.distance > 900) {
-  groundColor = '#9370DB'; // End Portal area
-} else if (gameState.distance > 600) {
-  groundColor = '#F0F8FF'; // Snowy tundra
-} else if (gameState.distance > 300) {
-  groundColor = '#F4A460'; // Desert
-}
+  function resetGame() {
+    gameState.day = 0;
+    gameState.distance = 0;
+    gameState.food = 100;
+    gameState.health = 100;
+    updateUI();
+  }
 
-// Draw biome background
-ctx.fillStyle = groundColor;
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+  function drawScene() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// Draw trail
-ctx.fillStyle = '#8B4513';
-ctx.fillRect(0, canvas.height - 150, canvas.width, 100);
+    // Determine biome based on distance
+    let groundColor = '#7CFC00'; // Grasslands
+    if (gameState.distance > 900) {
+      groundColor = '#9370DB'; // End Portal area
+    } else if (gameState.distance > 600) {
+      groundColor = '#F0F8FF'; // Snowy tundra
+    } else if (gameState.distance > 300) {
+      groundColor = '#F4A460'; // Desert
+    }
 
-// Draw sun
-ctx.fillStyle = '#FFD700';
-ctx.beginPath();
-ctx.arc(sunX, 80, 30, 0, Math.PI * 2);
-ctx.fill();
+    // Draw biome background
+    ctx.fillStyle = groundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-sunX += 1;
-if (sunX > canvas.width + 30) {
-  sunX = -30;
-}
+    // Draw trail
+    ctx.fillStyle = '#8B4513'; // Saddle brown
+    ctx.fillRect(0, canvas.height - 150, canvas.width, 100);
 
-// Draw wagon
-const wagonX = (gameState.distance / gameState.totalDistance) * (canvas.width - 100);
-const wagonY = canvas.height - 180;
+    // Draw sun
+    ctx.fillStyle = '#FFD700'; // Gold
+    ctx.beginPath();
+    ctx.arc(sunX, 80, 30, 0, Math.PI * 2);
+    ctx.fill();
 
-ctx.fillStyle = '#D2B48C';
-ctx.fillRect(wagonX, wagonY, 100, 50);
+    sunX += 1;
+    if (sunX > canvas.width + 30) {
+      sunX = -30;
+    }
 
-ctx.fillStyle = '#654321';
-ctx.beginPath();
-ctx.arc(wagonX + 20, wagonY + 50, 10, 0, Math.PI * 2);
-ctx.fill();
+    // Draw wagon
+    const wagonX = (gameState.distance / gameState.totalDistance) * (canvas.width - 100);
+    const wagonY = canvas.height - 180;
 
-ctx.beginPath();
-ctx.arc(wagonX + 80, wagonY + 50, 10, 0, Math.PI * 2);
-ctx.fill();
+    ctx.fillStyle = '#D2B48C'; // Tan
+    ctx.fillRect(wagonX, wagonY, 100, 50);
 
-}
+    ctx.fillStyle = '#654321'; // Dark brown wheels
+    ctx.beginPath();
+    ctx.arc(wagonX + 20, wagonY + 50, 10, 0, Math.PI * 2);
+    ctx.fill();
 
-function gameLoop() { drawScene(); requestAnimationFrame(gameLoop); }
+    ctx.beginPath();
+    ctx.arc(wagonX + 80, wagonY + 50, 10, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-document.getElementById('travelBtn')?.addEventListener('click', travel); document.getElementById('restBtn')?.addEventListener('click', rest); document.getElementById('mineBtn')?.addEventListener('click', mine); document.getElementById('huntBtn')?.addEventListener('click', hunt);
+  function gameLoop() {
+    drawScene();
+    requestAnimationFrame(gameLoop);
+  }
 
-updateUI(); gameLoop(); });
+  document.getElementById('travelBtn')?.addEventListener('click', travel);
+  document.getElementById('restBtn')?.addEventListener('click', rest);
+  document.getElementById('mineBtn')?.addEventListener('click', mine);
+  document.getElementById('huntBtn')?.addEventListener('click', hunt);
 
+  updateUI();
+  gameLoop();
+});
