@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,40 +18,34 @@
         <li><button id="settings-btn">Settings</button></li>
       </ul>
     </nav>
-  </header>
-
-  <main>
+  </header>  <main>
     <section id="game-container">
       <canvas id="gameCanvas"></canvas>
-    </section>
+    </section><section id="story-panel">
+  <p id="storyText">Your adventure begins...</p>
+</section>
 
-    <section id="controls">
-      <button id="travelBtn">Travel</button>
-      <button id="restBtn">Rest</button>
-      <button id="mineBtn">Mine</button>
-      <button id="huntBtn">Hunt</button>
-    </section>
+<section id="controls">
+  <button id="travelBtn">Travel</button>
+  <button id="restBtn">Rest</button>
+  <button id="mineBtn">Mine</button>
+  <button id="huntBtn">Hunt</button>
+</section>
 
-    <section id="status-panel">
-      <p>Day: <span id="dayCount">0</span></p>
-      <p>Distance: <span id="distance">0</span> / <span id="totalDistance">1000</span></p>
-      <p>Food: <span id="food">100</span></p>
-      <p>Health: <span id="health">100</span></p>
-    </section>
-  </main>
+<section id="status-panel">
+  <p>Day: <span id="dayCount">0</span></p>
+  <p>Distance: <span id="distance">0</span> / <span id="totalDistance">1000</span></p>
+  <p>Food: <span id="food">100</span></p>
+  <p>Health: <span id="health">100</span></p>
+</section>
 
-  <footer>
+  </main>  <footer>
     <p>&copy; 2025 Minecraft Trail Adventure</p>
-  </footer>
-
-  <script>
+  </footer>  <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
         .then(() => console.log('Service Worker registered'))
         .catch(err => console.error('SW error:', err));
     }
-  </script>
-
-  <script src="main.js" defer></script>
-</body>
+  </script>  <script src="main.js" defer></script></body>
 </html>
