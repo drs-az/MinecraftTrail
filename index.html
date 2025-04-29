@@ -23,7 +23,7 @@
 
   <main>
     <section id="game-container">
-      <canvas id="gameCanvas" width="800" height="600"></canvas>
+      <canvas id="gameCanvas"></canvas>
     </section>
 
     <section id="controls">
@@ -45,7 +45,6 @@
     <p>&copy; 2025 Minecraft Trail Adventure</p>
   </footer>
 
-  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
@@ -54,7 +53,6 @@
     }
   </script>
 
-  <!-- Game Logic Script -->
   <script src="main.js" defer></script>
 </body>
 </html>
