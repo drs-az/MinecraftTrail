@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => { const gameState = { day: 0, distance: 0, food: 100, health: 100, totalDistance: 1000 };
 
-const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); let sunX = 0;
 
-function updateUI() { document.getElementById('dayCount').textContent = gameState.day; document.getElementById('distance').textContent = gameState.distance; document.getElementById('food').textContent = gameState.food; document.getElementById('health').textContent = gameState.health; document.getElementById('totalDistance').textContent = gameState.totalDistance; drawScene(); }
+function updateUI() { document.getElementById('dayCount').textContent = gameState.day; document.getElementById('distance').textContent = gameState.distance; document.getElementById('food').textContent = gameState.food; document.getElementById('health').textContent = gameState.health; document.getElementById('totalDistance').textContent = gameState.totalDistance; }
 
 function randomEvent(chance) { return Math.random() < chance; }
 
@@ -20,24 +20,43 @@ function resetGame() { gameState.day = 0; gameState.distance = 0; gameState.food
 
 function drawScene() { ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// Draw grass background
-ctx.fillStyle = '#7CFC00'; // Lawn green
+// Determine biome based on distance
+let groundColor = '#7CFC00'; // Grasslands
+if (gameState.distance > 900) {
+  groundColor = '#9370DB'; // End Portal area
+} else if (gameState.distance > 600) {
+  groundColor = '#F0F8FF'; // Snowy tundra
+} else if (gameState.distance > 300) {
+  groundColor = '#F4A460'; // Desert
+}
+
+// Draw biome background
+ctx.fillStyle = groundColor;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// Draw dirt trail
-ctx.fillStyle = '#8B4513'; // Saddle brown
+// Draw trail
+ctx.fillStyle = '#8B4513';
 ctx.fillRect(0, canvas.height - 150, canvas.width, 100);
 
-// Calculate wagon position
+// Draw sun
+ctx.fillStyle = '#FFD700';
+ctx.beginPath();
+ctx.arc(sunX, 80, 30, 0, Math.PI * 2);
+ctx.fill();
+
+sunX += 1;
+if (sunX > canvas.width + 30) {
+  sunX = -30;
+}
+
+// Draw wagon
 const wagonX = (gameState.distance / gameState.totalDistance) * (canvas.width - 100);
 const wagonY = canvas.height - 180;
 
-// Draw wagon
-ctx.fillStyle = '#D2B48C'; // Tan
+ctx.fillStyle = '#D2B48C';
 ctx.fillRect(wagonX, wagonY, 100, 50);
 
-// Draw wheels
-ctx.fillStyle = '#654321'; // Dark brown
+ctx.fillStyle = '#654321';
 ctx.beginPath();
 ctx.arc(wagonX + 20, wagonY + 50, 10, 0, Math.PI * 2);
 ctx.fill();
@@ -48,7 +67,9 @@ ctx.fill();
 
 }
 
+function gameLoop() { drawScene(); requestAnimationFrame(gameLoop); }
+
 document.getElementById('travelBtn')?.addEventListener('click', travel); document.getElementById('restBtn')?.addEventListener('click', rest); document.getElementById('mineBtn')?.addEventListener('click', mine); document.getElementById('huntBtn')?.addEventListener('click', hunt);
 
-updateUI(); });
+updateUI(); gameLoop(); });
 
